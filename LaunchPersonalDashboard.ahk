@@ -1,35 +1,40 @@
 #Requires AutoHotkey v2.0
-SetTitleMatchMode 2  ; Allows for partial title matching
+SetTitleMatchMode 2
 #Include "DashboardLib.ahk"
 
+; 1. SETUP & CLEANUP
 CleanDashboard()
 
-; SWITCH LAYOUT
-Send "^!#{0}" ; Ctrl + Alt + Win + 0
-Sleep(500)
+; 2. GET LAYOUT (Calculates coordinates automatically)
+;    Pass in: (CorsairWidth, CorsairHeight, MainMonitorHeight, Offset, Left%, Center%, Split%)
+Zones := GetCorsairLayout(2560, 720, 1440, 8, 0.20, 0.55, 0.50)
 
-; Todoist (Left 20%)
+
+; 3. LAUNCH APPS
+; -----------------------------------------------------------
+
+; Zone 1: Todoist (Left 20%)
 LaunchApp("Profile 6", 
           "https://app.todoist.com/app/today", 
           "Todoist", 
-          0, 0, 512, 1440)
-		  
-; Work Carousel (Middle 55%)
+          Zones["Z1_X"], Zones["RealY"], Zones["Z1_W"], Zones["Z1_H"])
+
+; Zone 2: Work Carousel (Center 55%)
 LaunchApp("Profile 5", 
           "https://text.npr.org/", 
           "NPR", 
-          512, 0, 1408, 1440)
+          Zones["Z2_X"], Zones["RealY"], Zones["Z2_W"], Zones["Z2_H"])
 
-; Sharp (Right Top)
+; Zone 3 Top: SharpTools (Right Top)
 LaunchApp("Profile 10", 
           "https://sharptools.io/dashboard/view/5Bm9vEcFqQ4QNQAZZL5B?kiosk=true", 
           "Sharp",  
-          1920, 0, 640, 720)
+          Zones["Z3_X"], Zones["Z3Top_Y"], Zones["Z3_W"], Zones["Z3Top_H"])
 
-; Macro Deck (Right Bottom)
+; Zone 3 Bottom: Macro Deck (Right Bottom)
 LaunchApp("Profile 7", 
           "http://localhost:8191/client/", 
           "Macro", 
-          1920, 720, 640, 720)
+          Zones["Z3_X"], Zones["Z3Btm_Y"], Zones["Z3_W"], Zones["Z3Btm_H"])
 
 ExitApp
