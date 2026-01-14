@@ -117,41 +117,46 @@ GetCorsairLayout(TargetW := 2560, TargetH := 720, MainMonitorH := 1440, Offset :
 ; ==============================================================================
 LaunchApp(Profile, Url, TitleSnippet, X, Y, W, H)
 {
-    ; 1. Define Chrome Path (Adjust if necessary)
+    global SessionFile
+
+    ; 1. Define Chrome Path
     ChromePath := "C:\Program Files\Google\Chrome\Application\chrome.exe"
     
     ; 2. Construct the Command
-    ; We use --app=URL to force it into a separate window, even with "Default" profile
     if (Profile == "Default") {
         RunCmd := Format('"{1}" --app="{2}"', ChromePath, Url)
     } else {
         RunCmd := Format('"{1}" --profile-directory="{2}" --app="{3}"', ChromePath, Profile, Url)
     }
 
-    ; 3. Check if Window Exists
-    if !WinExist(TitleSnippet) {
-        Run RunCmd
+    ; 3. Launch
+    Run RunCmd
         
-        ; CRITICAL FIX: Wait for the window to actually load its title
-        ; Wait up to 5 seconds for "Tabliss" (or whatever title) to appear
-        if !WinWait(TitleSnippet, , 5) {
-            ; If it times out, try finding it by generic Chrome class as a fallback
-            if !WinWait("ahk_exe chrome.exe", , 2) {
-                MsgBox "Error: Could not launch or find window for: " . TitleSnippet
-                return
-            }
-        }
+    ; 4. Wait for Window and Capture HWND
+    ; WinWait returns the Unique ID (HWND) if found, or 0 if timeout
+    try {
+        hwnd := WinWait(TitleSnippet, , 5)
+    } catch {
+        MsgBox("Script timed out waiting for: " . TitleSnippet)
+        return
     }
 
-    ; 4. Move and Activate
-    ; We re-check WinExist to get the HWND (Handle) freshly
-    if WinExist(TitleSnippet) {
-        WinActivate ; Activates the "Found" window from WinExist
-        
-        ; Small sleep to ensure window is ready to move
-        Sleep 50 
-        
-        WinRestore ; Un-maximize to ensure it can be moved
-        WinMove X, Y, W, H
+    ; 5. Configure the Window
+    if (hwnd) {
+        ; A. Ghost Mode: Hide from Taskbar and Alt-Tab (+0x80 = ToolWindow)
+        ; Doing this first prevents the icon from flickering on the taskbar
+        WinSetExStyle "+0x80", hwnd
+
+        ; B. Move and Resize
+        WinActivate(hwnd)
+        WinRestore(hwnd) ; Un-maximize ensures WinMove works
+        WinMove(X, Y, W, H, hwnd) 
+
+        ; C. Save State: Append this specific HWND to the session file
+        try {
+            FileAppend(hwnd . "`n", SessionFile)
+        } catch as err {
+            MsgBox("Error writing to session file: " . err.Message)
+        }
     }
 }
