@@ -7,19 +7,19 @@ CleanDashboard()
 
 ; 2. GET LAYOUT (Calculates coordinates automatically)
 ;    Pass in: (CorsairWidth, CorsairHeight, MainMonitorHeight, Offset, Left%, Center%, Split%)
-Zones := GetCorsairLayout(2560, 720, 1440, 8, 0.20, 0.55, 0.50)
+Zones := GetCorsairLayout(2560, 720, 1440, 8, 0.25, 0.60, 0.50)
 
 
 ; 3. LAUNCH APPS
 ; -----------------------------------------------------------
 
-; Zone 1: Todoist (Left 20%)
+; Zone 1: Todoist (Left)
 LaunchApp("Profile 6", 
           "https://app.todoist.com/app/today", 
           "Todoist", 
           Zones["Z1_X"], Zones["RealY"], Zones["Z1_W"], Zones["Z1_H"])
 
-; Zone 2: Work Carousel (Center 55%)
+; Zone 2: Work Carousel (Center)
 LaunchApp("Profile 5", 
           "https://text.npr.org/", 
           "NPR", 
