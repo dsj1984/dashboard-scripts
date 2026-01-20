@@ -37,4 +37,10 @@ LaunchApp("Profile 7",
           "Macro", 
           Zones["Z3_X"], Zones["Z3Btm_Y"], Zones["Z3_W"], Zones["Z3Btm_H"])
 
+
+; THROW FOCUS BACK TO MAIN MONITOR
+try {
+    WinActivate "ahk_class Shell_TrayWnd"
+}
+
 ExitApp

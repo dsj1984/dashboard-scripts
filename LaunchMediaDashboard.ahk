@@ -44,4 +44,10 @@ LaunchApp("Default",
           SelectedMedia.Title, 
           Zones["Z2_X"], Zones["RealY"], Zones["Z2_W"], Zones["Z2_H"])
 
+
+; THROW FOCUS BACK TO MAIN MONITOR
+try {
+    WinActivate "ahk_class Shell_TrayWnd"
+}
+
 ExitApp
